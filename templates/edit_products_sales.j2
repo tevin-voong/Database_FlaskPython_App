@@ -1,0 +1,85 @@
+{% extends "Base.j2" %}
+{% block content %}
+
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Edit Product_Sale</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div>
+        <table border="1" cellpadding="5"> 
+            <caption> Editing: </caption>
+            <!-- Access data tuple passed from app.py -->
+            {% if data %}
+                <thead>
+                    <tr>
+                        <!-- Iterate through each key in the first entry to get the column name -->
+                        {% for key in data[0].keys() %}
+
+                        <!-- Create a <th> tag with the key inside of it, this will be our header row -->
+                        <th scope="col" data-field="{{ key }}" data-filter-control="input">{{ key }}</th>
+                        
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </tr>
+
+                <tbody>
+                    <!-- Now, iterate through every item in data -->
+                    {% for item in data %}
+                    <tr>
+                        <!-- Then iterate through every key in the current item dictionary -->
+                        {% for key in item.keys() %}
+                        
+                        <!-- Create a <td> element with the value of that key in it -->
+                        <td>{{item[key]}}</td> {% endfor %} 
+                    </tr> 
+                    {% endfor %} 
+            {% endif %} 
+        </table>
+
+        <div id="edit">
+            <!-- form to edit data in ingredient_product-->
+            <form id="editProduct_Sale" action="/edit_product_sale/{{data[0].product_sales_ID}}" method="post">
+                <legend><strong>Edit Product_Sale</strong></legend>
+                <fieldset>
+                    <input type="hidden" value="{{data[0].product_sales_ID}}" class="form-control" id="product_sales_ID" name="product_sales_ID" required>
+                    {# <input type="hidden" value="{{data[0].prod_name}}" class="form-control" id="original_name" name="original_name" required> #}
+
+                    <label for="year">Product Name:</label>
+                    <select class="form-control" id="prod_name" name="prod_name" placeholder="" required> 
+                        <!-- Access our tuple passed from app.py-->
+                        <option value="0">&nbsp;</option>
+                        {% for product in products %}
+                                <!-- If the value iterated matches the value of currently Editing, pre-select that option -->
+                                {% if product['prod_name'] == data[0].prod_name %}
+                                    <option value="{{ product['prod_name'] }}" selected> {{product['prod_name']}}</option>
+                                {% else %}
+                                    <option value="{{ product['prod_name'] }}"> {{product['prod_name']}}</option> 
+                                {% endif %}
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </select>
+                    <label for="year">Transaction ID:</label>
+                    <select class="form-control" id="transaction_ID" name="transaction_ID" placeholder="" required> 
+                        <!-- Access our tuple passed from app.py-->
+                        <option value="0">&nbsp;</option>
+                        {% for sale in sales %}
+                                <!-- If the value iterated matches the value of currently Editing, pre-select that option -->
+                                {% if sale['transaction_ID'] == data[0].transaction_ID %}
+                                    <option value="{{ sale['transaction_ID'] }}" selected> {{sale['transaction_ID']}}</option>
+                                {% else %}
+                                    <option value="{{ sale['transaction_ID'] }}"> {{sale['transaction_ID']}}</option> 
+                                {% endif %}
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </select>	 	 
+                </fieldset>
+                <input type="submit" value="Edit" name="Edit_Product_Sale" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/products_sales'><input class="btn" type="button" value="Cancel"></a>
+            </form>
+
+</html>
+{% endblock %}

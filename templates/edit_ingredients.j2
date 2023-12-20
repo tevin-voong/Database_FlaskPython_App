@@ -1,0 +1,66 @@
+{% extends "Base.j2" %}
+{% block content %}
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Edit Ingredient</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div>
+        <table border="1" cellpadding="5"> 
+            <caption> Editing Ingredient: </caption>
+            <!-- Access data tuple passed from app.py -->
+            {% if data %}
+                <thead>
+                    <tr>
+                        <!-- Iterate through each key in the first entry to get the column name -->
+                        {% for key in data[0].keys() %}
+
+                        <!-- Create a <th> tag with the key inside of it, this will be our header row -->
+                        <th scope="col" data-field="{{ key }}" data-filter-control="input">{{ key }}</th>
+                        
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </tr>
+
+                <tbody>
+                    <!-- Now, iterate through every item in data -->
+                    {% for item in data %}
+                    <tr>
+                        <!-- Then iterate through every key in the current item dictionary -->
+                        {% for key in item.keys() %}
+                        
+                        <!-- Create a <td> element with the value of that key in it -->
+                        <td>{{item[key]}}</td> {% endfor %} 
+                    </tr> 
+                    {% endfor %} 
+            {% endif %} 
+        </table>
+
+        <div id="edit">
+            <!-- form to edit data in Ingredient-->
+            <form id="editIngredient" action="/edit_ingredient/{{data[0].ingredient_ID}}" method="post">
+                <legend><strong>Edit Ingredient</strong></legend>
+                <fieldset>
+                    <!-- We can preset form inputs to match attributes currently stored for 'id' of person to be updated via value= and accessing our passed data tuple -->
+                    <!-- Create hidden form input to store the passed 'id' of the person we are editing so we can access it easily in our 'POST' method in our app.py -->
+                    <input type="hidden" value="{{data[0].ingredient_ID}}" class="form-control" id="ingredient_ID" name="ingredient_ID" required>
+                    
+                    <label for="make">Item Name:</label>
+                    <input type="text" value="{{data[0].item_name}}" class="form-control" id="item_name" name="item_name" required>
+                    
+                    <label for="model">Item Quantity:</label>
+                    <input type="number" value="{{data[0].item_quantity}}" class="form-control" id="item_quantity" name="item_quantity" required>   
+
+                    <label for="model">Unit Price:</label>
+                    <input type="number" value="{{data[0].unit_price}}" step=".01" class="form-control" id="unit_price" name="unit_price" required> 
+                </fieldset>
+
+                <input type="submit" value="Edit Ingredient" name="Edit_Ingredient" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/ingredients'><input class="btn" type="button" value="Cancel"></a>
+            </form>
+
+</html>
+{% endblock %}

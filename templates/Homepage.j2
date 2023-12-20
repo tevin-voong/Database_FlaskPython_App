@@ -1,0 +1,13 @@
+{% extends "Base.j2" %}
+
+{% block content %}
+
+<h1>Some Cafe</h1>
+
+<p>Welcome to the Some Cafe database! Please click on the navigation at the top to view the various tables.</p>
+
+<body>
+<img src= "{{url_for('static', filename='/coffee.jpg')}}" >
+</body>
+
+{% endblock %}

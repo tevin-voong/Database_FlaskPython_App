@@ -1,0 +1,74 @@
+{% extends "Base.j2" %}
+{% block content %}
+
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Edit Sale</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div>
+        <table border="1" cellpadding="5"> 
+            <caption> Editing Sale: </caption>
+            <!-- Access data tuple passed from app.py -->
+            {% if data %}
+                <thead>
+                    <tr>
+                        <!-- Iterate through each key in the first entry to get the column name -->
+                        {% for key in data[0].keys() %}
+
+                        <!-- Create a <th> tag with the key inside of it, this will be our header row -->
+                        <th scope="col" data-field="{{ key }}" data-filter-control="input">{{ key }}</th>
+                        
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </tr>
+
+                <tbody>
+                    <!-- Now, iterate through every item in data -->
+                    {% for item in data %}
+                    <tr>
+                        <!-- Then iterate through every key in the current item dictionary -->
+                        {% for key in item.keys() %}
+                        
+                        <!-- Create a <td> element with the value of that key in it -->
+                        <td>{{item[key]}}</td> {% endfor %} 
+                    </tr> 
+                    {% endfor %} 
+            {% endif %} 
+        </table>
+
+        <div id="edit">
+            <!-- form to edit data in sales-->
+            <form id="editSale" action="/edit_sale/{{data[0].transaction_ID}}" method="post">
+                <legend><strong>Edit Sale</strong></legend>
+                <fieldset>
+                    <input type="hidden" value="{{data[0].transaction_ID}}" class="form-control" id="transaction_ID" name="transaction_ID" required>
+                    
+                    <label for="make">Total Cost:</label>
+                    <input type="number" value="{{data[0].total_cost}}" step=".01" class="form-control" id="total_cost" name="total_cost" required>
+                    
+                    <label for="year">Employee Name:</label>
+                    <select class="form-control" id="employee_ID" name="employee_ID" placeholder="" required> 
+                        <!-- Access our tuple passed from app.py-->
+                        <option value="0">&nbsp;</option>
+                        {% for sale in sales %}
+                                <!-- If the value iterated matches the value of currently Editing, pre-select that option -->
+                                {% if sale['employee_ID'] == data[0].employee_ID %}
+                                    <option value="{{ sale['employee_ID'] }}" selected> {{sale['employee_name']}}</option>
+                                {% else %}
+                                    <option value="{{ sale['employee_ID'] }}"> {{sale['employee_name']}}</option> 
+                                {% endif %}
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </select>	 
+                </fieldset>
+                <input type="submit" value="Edit Sale" name="Edit_Sale" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/sales'><input class="btn" type="button" value="cancel"></a>
+            </form>
+
+</html>
+
+{% endblock %}

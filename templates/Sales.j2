@@ -1,0 +1,134 @@
+{% extends "Base.j2" %}
+{% block content %}
+
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Sales</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+	<script language="JavaScript">
+	function showform(dowhat) {
+		/*
+		 * four DIVS: browse, insert, update, delete
+		 * this function sets one visible the others not
+		 */
+		if(dowhat == 'insert') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'update') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'delete') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'block';
+		} else if(dowhat == 'all') {
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'block';
+		} else { //by default display browse
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		}
+	}
+
+	function newSale() {
+		showform('insert');
+	}
+
+	function updateSale(pid) {
+		showform('update');
+	}
+
+	function deleteSale(pid) {
+		showform('delete');
+	}
+
+	function browseSale() {
+		showform('browse');
+	}
+
+	function showAll() {
+		showform('all');
+	}
+	</script>
+</head>
+
+<body onload="browseSale()">
+	<h1>Sales</h1> 	
+	
+	{# [ <a href="homepage">Home Page</a> | <a href="employees">Employees</a> | <a href="jobs">Jobs</a> | <a href="ingredients">Ingredients</a> | <a href="products">Products</a> | <a href="sales">Sales</a> | <a href="ingredients_products">Ingredients_Products</a> | <a href="products_sales">Products_Sales</a> ] #}
+	
+	<p>This page includes functions to add, update, or delete a sale from the database.</p>
+	
+	<div id="browse">
+		<p><a href="#" onClick="newSale()">Add Sale</a> </p>
+		<table border="1" cellpadding="5">
+            <!-- Access data tuple passed from app.py --> 
+            {% if data %}
+			    <thead>
+				    <tr>
+					    <th>Transaction ID</th>
+						<th>Total Cost</th>
+						<th>Employee</th>
+						<th colspan="2">Actions</th>
+                    </tr>
+
+				<tbody>
+					<!-- Now, iterate through every item in data -->{% for item in data %}
+					    <tr>
+						    <!-- Then iterate through every key in the current item dictionary -->
+                            {% for key in item.keys() %}
+
+						    <!-- Create a <td> element with the value of that key in it -->
+						    <td> {{item[key]}} </td> 
+                            {% endfor %}
+
+                            <!-- Create our edit/delete buttons -->
+						    <td><a href="edit_sale/{{item.transaction_ID}}" class="btn btn-default">Edit</a></td>
+						    <td><a href="delete_sale/{{item.transaction_ID}}" class="btn btn-default">Delete</a></td>
+
+					    </tr> 
+                        {% endfor %} 
+                {% endif %} 
+        </table>   
+	<p>&nbsp;</p>
+    </div>	<!-- browse -->
+
+    <div id="insert">
+		<!-- form to INSERT new data into sales-->
+		<form id="insertSale" action="/sales" method="post">
+			<legend><strong>Add Sale</strong></legend>
+			<fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
+
+				<label for="make">Total Cost:</label>
+				<input type="number" min="0" value="0.00" step=".01" class="form-control" id="total_cost" name="total_cost" placeholder="" required>
+
+				<label for="year">Employee:</label>
+				<select class="form-control" id="employee_ID" name="employee_ID" placeholder="">
+				<!-- these are dynamic -->
+					<option value="0">&nbsp;</option>
+					{% for employee in employees %}
+                        		<!-- For loop to loop through possible values -->
+                                <option value="{{ employee['employee_ID'] }}"> {{employee['employee_name']}}</option> 
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+				</select>
+			</fieldset>
+
+            <!-- Create 'Add Sale' and 'Cancel' buttons -->
+			<input type="submit" value="Add Sale" name="Add_Sale" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browseSale()"> 
+        </form>
+	</div><!--insert-->
+
+{% endblock %}

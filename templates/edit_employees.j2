@@ -1,0 +1,77 @@
+{% extends "Base.j2" %}
+{% block content %}
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Edit Employee</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div>
+        <table border="1" cellpadding="5"> 
+            <caption> Editing User: </caption>
+            <!-- Access data tuple passed from app.py -->
+            {% if data %}
+                <thead>
+                    <tr>
+                        <!-- Iterate through each key in the first entry to get the column name -->
+                        {% for key in data[0].keys() %}
+
+                        <!-- Create a <th> tag with the key inside of it, this will be our header row -->
+                        <th scope="col" data-field="{{ key }}" data-filter-control="input">{{ key }}</th>
+                        
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </tr>
+
+                <tbody>
+                    <!-- Now, iterate through every item in data -->
+                    {% for item in data %}
+                    <tr>
+                        <!-- Then iterate through every key in the current item dictionary -->
+                        {% for key in item.keys() %}
+                        
+                        <!-- Create a <td> element with the value of that key in it -->
+                        <td>{{item[key]}}</td> {% endfor %} 
+                    </tr> 
+                    {% endfor %} 
+            {% endif %} 
+        </table>
+
+        <div id="edit">
+            <!-- form to edit data in employees-->
+            <form id="editEmployee" action="/edit_employee/{{data[0].employee_ID}}" method="post">
+                <legend><strong>Edit Employee</strong></legend>
+                <fieldset>
+                    <input type="hidden" value="{{data[0].employee_ID}}" class="form-control" id="employee_ID" name="employee_ID" required>
+                    
+                    <label for="make">Employee Name:</label>
+                    <input type="text" value="{{data[0].employee_name}}" class="form-control" id="employee_name" name="employee_name" required>
+                    
+                    <label for="model">Employee Hours:</label>
+                    <input type="text" value="{{data[0].employee_hours}}" class="form-control" id="employee_hours" name="employee_hours" required>
+                    
+                    <label for="year">Job:</label>
+                    <select class="form-control" id="job" name="job" placeholder=""> 
+
+                        <!-- Access our tuple passed from app.py-->
+                        <option value="">&nbsp;</option>
+                        {% for job in jobs %}
+                                <!-- If the value iterated matches the value of currently Editing, pre-select that option -->
+                                {% if job['job_ID'] == data[0].job_ID %}
+                                    <option value="{{ job['job_ID'] }}" selected> {{job['job_title']}}</option>
+                                {% else %}
+                                    <option value="{{ job['job_ID'] }}"> {{job['job_title']}}</option>
+                                {% endif %}
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+                    </select>	 
+                
+                </fieldset>
+                <input type="submit" value="Edit Employee" name="Edit_Employee" class="btn btn-primary" style="margin:.5rem;">
+                <a href='/employees'><input class="btn" type="button" value="cancel"></a>
+            </form>
+
+</html>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "Base.j2" %}
+{% block content %}
+
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Products_Sales</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+	<script language="JavaScript">
+	function showform(dowhat) {
+		/*
+		 * four DIVS: browse, insert, update, delete
+		 * this function sets one visible the others not
+		 */
+		if(dowhat == 'insert') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'update') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'delete') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'block';
+		} else if(dowhat == 'all') {
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'block';
+		} else { //by default display browse
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		}
+	}
+
+	function newProduct_Sale() {
+		showform('insert');
+	}
+
+	function updateProduct_Sale(pid) {
+		showform('update');
+	}
+
+	function deleteProduct_Sale(pid) {
+		showform('delete');
+	}
+
+	function browseProduct_Sale() {
+		showform('browse');
+	}
+
+	function showAll() {
+		showform('all');
+	}
+	</script>
+</head>
+
+<body onload="Product_Sale()">
+	<h1>Products_Sales</h1> 
+
+	{# [ <a href="homepage">Home Page</a> | <a href="employees">Employees</a> | <a href="jobs">Jobs</a> | <a href="ingredients">Ingredients</a> | <a href="products">Products</a> | <a href="sales">Sales</a> | <a href="ingredients_products">Ingredients_Products</a> | <a href="products_sales">Products_Sales</a> ] #}
+	
+	<p>This page includes functions to add, update, or delete a product-sales pair from the database.</p>
+	
+	<div id="browse">
+		<p><a href="#" onClick="newProduct_Sale()">Add</a> </p>
+		<table border="1" cellpadding="5">
+            <!-- Access data tuple passed from app.py --> 
+            {% if data %}
+			    <thead>
+				    <tr>
+						<th>Product Sales ID</th>
+					    <th>Product Name</th>
+						<th>Transaction ID</th>
+						<th>Quantity Sold</th>
+						<th colspan="2">Actions</th>
+                    </tr>
+
+				<tbody>
+					<!-- Now, iterate through every item in data -->{% for item in data %}
+					    <tr>
+						    <!-- Then iterate through every key in the current item dictionary -->
+                            {% for key in item.keys() %}
+
+						    <!-- Create a <td> element with the value of that key in it -->
+						    <td> {{item[key]}} </td> 
+                            {% endfor %}
+
+                            <!-- Create our edit/delete buttons -->
+						    <td><a href="edit_product_sale/{{item.product_sales_ID}}" class="btn btn-default">Edit</a></td>
+						    <td><a href="delete_product_sale/{{item.product_sales_ID}}" class="btn btn-default">Delete</a></td>
+
+					    </tr> 
+                        {% endfor %} 
+                {% endif %} 
+        </table>
+
+	<p>&nbsp;</p>
+
+	</div>	<!-- browse -->
+
+	<div id="insert">
+		<!-- form to INSERT new data into sales-->
+		<form id="insertProduct_Sale" action="/products_sales" method="post">
+			<legend><strong>Add</strong></legend>
+			<fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
+
+				<label for="make">Product Name:</label>
+				<select class="form-control" id="prod_name" name="prod_name" placeholder="">
+				<!-- these are hard coded, but you can add code to make this dynamic -->
+					<option value="0">&nbsp;</option>
+					{% for product in products %}
+                        		<!-- For loop to loop through possible values -->
+                                <option value="{{ product['prod_name'] }}"> {{product['prod_name']}}</option> 
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+				</select>
+
+				<label for="year">Transaction ID:</label>
+				<select class="form-control" id="transaction_ID" name="transaction_ID" placeholder="">
+				<!-- these are dynamic -->
+					<option value="0">&nbsp;</option>
+					{% for sale in sales %}
+                        		<!-- For loop to loop through possible values -->
+                                <option value="{{ sale['transaction_ID'] }}"> {{sale['transaction_ID']}}</option> 
+                        <!-- End of this for loop -->
+                        {% endfor %} 
+				</select>
+
+				<label for="color">Quantity Sold:</label>
+				<input type="number" value="0" step="1" class="form-control" id="quantity_sold" name="quantity_sold" placeholder="">
+			</fieldset>
+
+            <!-- Create 'Add' and 'Cancel' buttons -->
+			<input type="submit" value="Add" name="Add_Product_Sale" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browseProduct_Sale()"> 
+        </form>
+	</div><!--insert-->
+
+{% endblock %}

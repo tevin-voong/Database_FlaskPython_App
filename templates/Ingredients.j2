@@ -1,0 +1,152 @@
+{% extends "Base.j2" %}
+{% block content %}
+
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Ingredients</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+	<script language="JavaScript">
+	function showform(dowhat) {
+		/*
+		 * four DIVS: browse, insert, update, delete
+		 * this function sets one visible the others not
+		 */
+		if(dowhat == 'insert') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'update') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'delete') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'block';
+		} else if(dowhat == 'all') {
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'block';
+		} else { //by default display browse
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		}
+	}
+
+	function newIngredient() {
+		showform('insert');
+	}
+
+	function updateIngredient(pid) {
+		showform('update');
+	}
+
+	function deleteIngredient(pid) {
+		showform('delete');
+	}
+
+	function browseIngredient() {
+		showform('browse');
+	}
+
+	function showAll() {
+		showform('all');
+	}
+	</script>
+</head>
+
+<body onload="browseIngredient()">
+	<h1>Ingredient</h1> 	
+	
+	{# [ <a href="homepage">Home Page</a> | <a href="employees">Employees</a> | <a href="jobs">Jobs</a> | <a href="ingredients">Ingredients</a> | <a href="products">Products</a> | <a href="sales">Sales</a> | <a href="ingredients_products">Ingredients_Products</a> | <a href="products_sales">Products_Sales</a> ] #}
+	
+	<p>This page includes functions to add, update, or delete an ingredient from the database.</p>
+	
+	<div id="browse">
+		<p><a href="#" onClick="newIngredient()">Add New</a> </p>
+		<table border="1" cellpadding="5">
+            <!-- Access data tuple passed from app.py --> 
+            {% if data %}
+			    <thead>
+
+				    <tr>
+					    <th>Ingredient ID</th>
+						<th>Item Name</th>
+						<th>Item Quantity</th>
+						<th>Unit Price</th>
+						<th colspan="2">Actions</th>
+                    </tr>
+
+				<tbody>
+					<!-- Now, iterate through every item in data -->{% for item in data %}
+					    <tr>
+						    <!-- Then iterate through every key in the current item dictionary -->
+                            {% for key in item.keys() %}
+
+						    <!-- Create a <td> element with the value of that key in it -->
+						    <td> {{item[key]}} </td> 
+                            {% endfor %}
+
+                            <!-- Create our edit/delete buttons -->
+						    <td><a href="edit_ingredient/{{item.ingredient_ID}}" class="btn btn-default">Edit</a></td>
+						    <td><a href="delete_ingredient/{{item.ingredient_ID}}" class="btn btn-default">Delete</a></td>
+
+					    </tr> 
+                        {% endfor %} 
+                {% endif %} 
+        </table>   
+	<p>&nbsp;</p>
+	</div>	<!-- browse -->
+
+	<div id="insert">
+		<!-- form to INSERT new data into Ingredients-->
+		<form id="insertIngredient" action="/ingredients" method="post">
+			<legend><strong>Add Ingredient</strong></legend>
+			<fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
+				<label for="make">Item Name:</label>
+				<input type="text" class="form-control" id="item_name" name="item_name" placeholder="" required>
+
+				<label for="model">Item Quantity:</label>
+				<input type="number" value="0" class="form-control" id="item_quantity" name="item_quantity" placeholder="" required>
+
+				<label for="color">Unit Price:</label>
+				<input type="number" value="0.00" step=".01" class="form-control" id="unit_price" name="unit_price" placeholder=""> 
+            </fieldset>
+
+            <!-- Create 'Add Ingredient' and 'Cancel' buttons -->
+			<input type="submit" value="Add Ingredient" name="Add_Ingredient" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browseIngredient()"> 
+        </form>
+	</div><!--insert-->
+
+	<div id="edit">
+		<!-- form to edit data in Ingredient-->
+		<form id="editIngredient" action="/edit_ingredient/{{data[0].ingredient_ID}}" method="post">
+			<legend><strong>Edit Ingredient</strong></legend>
+			<fieldset>
+				<input type="hidden" value="{{data[0].ingredient_ID}}" class="form-control" id="ingredient_ID" name="ingredient_ID" required>
+				
+				<label for="make">Item Name:</label>
+				<input type="text" class="form-control" id="item_name" name="item_name" placeholder="{{data[0].item_name}}" required>
+				
+				<label for="model">Item Quantity:</label>
+				<input type="text" class="form-control" id="item_quantity" name="item_quantity" placeholder="{{data[0].item_quantity}}" required>
+
+				<label for="color">Unit Price:</label>
+				<input type="text" class="form-control" id="unit_price" name="unit_price" placeholder="{{data[0].unit_price}}" required> </fieldset>
+				
+				<input class="btn" type="button" value="Cancel" onClick="browseIngredient()" style="margin:.5rem;"> 
+        </form>
+	</div><!--edit-->
+</body>
+</html>
+
+{% endblock %}

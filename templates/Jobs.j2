@@ -1,0 +1,151 @@
+{% extends "Base.j2" %}
+{% block content %}
+
+<html>
+<!-- All code is based on the CS 340 starter code -->
+<head>
+	<title>Jobs</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+	<script language="JavaScript">
+	function showform(dowhat) {
+		/*
+		 * four DIVS: browse, insert, update, delete
+		 * this function sets one visible the others not
+		 */
+		if(dowhat == 'insert') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'update') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'none';
+		} else if(dowhat == 'delete') {
+			document.getElementById('browse').style.display = 'none';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'block';
+		} else if(dowhat == 'all') {
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'block';
+			document.getElementById('edit').style.display = 'block';
+			document.getElementById('delete').style.display = 'block';
+		} else { //by default display browse
+			document.getElementById('browse').style.display = 'block';
+			document.getElementById('insert').style.display = 'none';
+			document.getElementById('edit').style.display = 'none';
+			document.getElementById('delete').style.display = 'none';
+		}
+	}
+
+	function newJob() {
+		showform('insert');
+	}
+
+	function updateJob(pid) {
+		showform('update');
+	}
+
+	function deleteJob(pid) {
+		showform('delete');
+	}
+
+	function browseJob() {
+		showform('browse');
+	}
+
+	function showAll() {
+		showform('all');
+	}
+	</script>
+</head>
+
+<body onload="browseJob()">
+	<h1>Jobs</h1> 
+
+	{# [ <a href="homepage">Home Page</a> | <a href="employees">Employees</a> | <a href="jobs">Jobs</a> | <a href="ingredients">Ingredients</a> | <a href="products">Products</a> | <a href="sales">Sales</a> | <a href="ingredients_products">Ingredients_Products</a> | <a href="products_sales">Products_Sales</a> ] #}
+	
+	<p>This page includes functions to add, update, or delete a job from the database.</p>
+	
+	<div id="browse">
+		<p><a href="#" onClick="newJob()">Add Job</a></p>
+		<table border="1" cellpadding="5">
+            <!-- Access data tuple passed from app.py --> 
+            {% if data %}
+			    <thead>
+				    <tr>
+					    <th>Job ID</th>
+						<th>Job Title</th>
+						<th>Wage</th>
+						<th colspan="2">Actions</th>
+                    </tr>
+
+				<tbody>
+					<!-- Now, iterate through every item in data -->{% for item in data %}
+					    <tr>
+						    <!-- Then iterate through every key in the current item dictionary -->
+                            {% for key in item.keys() %}
+
+						    <!-- Create a <td> element with the value of that key in it -->
+						    <td> {{item[key]}} </td> 
+                            {% endfor %}
+
+                            <!-- Create our edit/delete buttons -->
+						    <td><a href="edit_jobs/{{item.job_ID}}" class="btn btn-default" role="button">Edit</a></td>
+							{# <td><button onclick="edit_jobs/{{item.job_ID}}" class="btn btn-default">Edit</button></td> #}
+						    <td><a href="delete_jobs/{{item.job_ID}}" class="btn btn-default">Delete</a></td>
+
+					    </tr> 
+                        {% endfor %} 
+                {% endif %} 
+        </table>
+		{# <p><a href="#" onClick="newJob()">Add Job</a></p> #}
+
+	<p>&nbsp;</p>
+
+	</div>	<!-- browse -->
+
+	<div id="insert">
+		<!-- form to INSERT new data into jobs-->
+		<form id="insertJobs" action="/jobs" method="post">
+			<legend><strong>Add Job</strong></legend>
+
+			<fieldset>
+                <!-- placeholder shows ghost text, required forces an input, pattern forces input adherence -->
+				<label for="make">Job Title:</label>
+				<input type="text" class="form-control" id="job_title" name="job_title" placeholder="" required>
+
+				<label for="color">Wage:</label>
+				<input type="number" min="0" value="0.00" step=".01" class="form-control" id="wage" name="wage" placeholder=""> 
+            </fieldset>
+
+            <!-- Create 'Add Job' and 'Cancel' buttons -->
+			<input type="submit" value="Add Job" name="Add_Job" class="btn btn-primary" style="margin:.5rem;">
+			<input class="btn" type="button" value="Cancel" onClick="browseJob()"> 
+        </form>
+	</div><!--insert-->
+	
+	
+	<div id="edit">
+		<!-- form to edit data in bsg_people-->
+		<form id="editJobs" action="/edit_jobs/{{data[0].job_ID}}" method="post">
+			<legend><strong>Edit Jobs</strong></legend>
+			<fieldset>
+				<input type="hidden" value="{{data[0].job_ID}}" class="form-control" id="job_ID" name="job_ID" required>
+				<label for="make">job_title:</label>
+
+				<input type="text" class="form-control" id="job_title" name="job_title" pattern="[A-Za-z]{1,}" placeholder="{{data[0].job_title}}" required>
+				<label for="model">wage:</label>
+
+				<input type="text" class="form-control" id="wage" name="wage" pattern="[A-Za-z0-9]{1,}" placeholder="{{data[0].wage}}" required>
+				
+			</fieldset>
+				<input class="btn" type="button" value="Cancel" onClick="browseJob()" style="margin:.5rem;"> 
+        </form>
+	</div><!--edit-->
+</body>
+</html>
+
+{% endblock %}
